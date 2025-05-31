@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../Pages/ProductCard";
 // import { useAppContext } from "@/context/AppContext";
-import { getTopRatedProducts } from "../../services/ProductService";
+import { getAllProducts } from "../../services/ProductService";
 
 const HomeProducts = () => {
   const [topRatedProducts, setTopRatedProducts] = useState([]);
@@ -31,7 +31,7 @@ const HomeProducts = () => {
   const fetchTopRatedProducts = async () => {
     const req = { limit: 20 };
     try {
-      const res = await getTopRatedProducts(req);
+      const res = await getAllProducts(req);
       if (res.status) {
         setTopRatedProducts(res.data); // Agar status true hai to data set karo
       } else {

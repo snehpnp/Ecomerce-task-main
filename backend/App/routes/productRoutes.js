@@ -5,7 +5,6 @@ const {
   getProductById,
   getAllProducts,
   addProduct,
-  getTopRatedProducts,
   PaymentFunction,
   handlePaymentSuccess,
   handlePaymentCancel,
