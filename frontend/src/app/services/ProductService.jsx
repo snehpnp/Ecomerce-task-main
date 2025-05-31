@@ -46,12 +46,15 @@ export const deleteProduct = async (data) => {
 
 
 export const uploadToCloudinary = async (file) => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+
     const formData = new FormData();
     formData.append("file", file);
-    // formData.append("upload_preset", "my_unsigned_preset");
-    // formData.append("cloud_name", "dlpeqbowx");
-    formData.append("upload_preset", "my_unsigned_preset");
-    formData.append("cloud_name", "dsuvis7qq");
+
+    formData.append("upload_preset", uploadPreset);
+    formData.append("cloud_name", cloudName);
 
 
     try {
@@ -73,8 +76,9 @@ export const uploadToCloudinary = async (file) => {
         return null;
     }
 };
+const VITE_LOADSCRIPT = import.meta.env.VITE_LOADSCRIPT;
 
-const stripePromise = loadStripe("pk_test_51RUZcNB0Dx8BNsL2c4JCGBlhSwRSc8TT3jrhoSw1TfT21AVLBw2s5VzGKgEoOg560aoIPxfpQMuNqi1RU9nfDxoO00JuuH0brt"); // Your publishable key
+const stripePromise = loadStripe(VITE_LOADSCRIPT); // Your publishable key
 
 
 export const handleCheckout = async (data, Token) => {

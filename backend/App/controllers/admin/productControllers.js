@@ -239,11 +239,10 @@ class ProductController {
           .json({ success: false, message: "Missing session_id" });
       }
       const session = await stripe.checkout.sessions.retrieve(session_id);
-      console.log(session.metadata);
+
 
       const paymentId = session.metadata.payment_id;
 
-      console.log("Session retrieved:", session);
 
       const payment = await PaymentModel.findById(paymentId);
       if (!payment) {

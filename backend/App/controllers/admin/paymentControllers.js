@@ -34,7 +34,6 @@ async getPaymentsByUserId(req, res) {
 
   let UserRole = await user.findOne({ _id: userId }).select("role");
 
-  console.log("User Role:", UserRole.role);
 
   let Match = {};
   if (UserRole.role === "ADMIN") {

@@ -59,7 +59,6 @@ const ProductTable = () => {
 };
 
 
-    console.log("Current Product:", currentProduct);
 
 
     const handleFormSubmit = async (e) => {

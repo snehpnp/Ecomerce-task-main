@@ -19,7 +19,7 @@ const Success = () => {
       const timeout = setTimeout(() => {
         setShowPopup(false);
         navigate("/"); // Redirect to home
-      }, 5000);
+      }, 3000);
 
       return () => clearTimeout(timeout); // Cleanup timeout on unmount
     }
