@@ -1,13 +1,23 @@
-import React, { useState ,useEffect} from "react";
-import { FaMapMarkerAlt, FaUser, FaPhone, FaHome, FaCity, FaEnvelope } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import {
+  FaMapMarkerAlt,
+  FaUser,
+  FaPhone,
+  FaHome,
+  FaCity,
+  FaEnvelope,
+  FaCheckCircle,
+  FaRegCircle,
+} from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Fix for default marker icon not appearing
+// Fix leaflet default icon issues
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
@@ -23,9 +33,12 @@ const AddAddress = () => {
     lat: 28.6139,
     lng: 77.209,
   });
-
   const [errors, setErrors] = useState({});
 
+  // All saved addresses state, with one marked as primary
+  const [addresses, setAddresses] = useState([]);
+
+  // Validation function
   const validate = () => {
     const errs = {};
     if (!form.name.trim()) errs.name = "Name is required";
@@ -39,21 +52,56 @@ const AddAddress = () => {
     return errs;
   };
 
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Save address on form submit
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
+
     if (Object.keys(validationErrors).length === 0) {
-      alert("Address saved:\n" + JSON.stringify(form, null, 2));
-      // Submit to backend
+      // Create a new address with an id and primary flag
+      const newAddress = {
+        ...form,
+        id: Date.now(),
+        isPrimary: addresses.length === 0, // first address is primary by default
+      };
+
+      setAddresses((prev) => [...prev, newAddress]);
+      alert("Address saved!");
+
+      // Reset form except keep lat/lng for user convenience
+      setForm((prev) => ({
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+        lat: prev.lat,
+        lng: prev.lng,
+      }));
+      setErrors({});
     }
   };
 
+  // To set primary address when user clicks toggle
+  const setPrimaryAddress = (id) => {
+    setAddresses((prev) =>
+      prev.map((addr) =>
+        addr.id === id
+          ? { ...addr, isPrimary: true }
+          : { ...addr, isPrimary: false }
+      )
+    );
+  };
+
+  // Map click handler to update lat/lng on map click
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
@@ -67,36 +115,40 @@ const AddAddress = () => {
     return null;
   };
 
+  // On mount try geolocation to center map
   useEffect(() => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setForm((prev) => ({
-          ...prev,
-          lat: latitude,
-          lng: longitude,
-        }));
-      },
-      (err) => {
-        console.warn("Geolocation error:", err.message);
-      }
-    );
-  } else {
-    console.warn("Geolocation not supported");
-  }
-}, []);
-
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setForm((prev) => ({
+            ...prev,
+            lat: latitude,
+            lng: longitude,
+          }));
+        },
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+        }
+      );
+    } else {
+      console.warn("Geolocation not supported");
+    }
+  }, []);
 
   return (
     <div style={containerStyle}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
         <FaMapMarkerAlt /> Add Delivery Address
       </h2>
+
       <form onSubmit={handleSubmit}>
+        {/* Name & Phone */}
         <div style={rowStyle}>
           <div style={colStyle}>
-            <label style={labelStyle}><FaUser /> Name:</label>
+            <label style={labelStyle}>
+              <FaUser /> Name:
+            </label>
             <input
               type="text"
               name="name"
@@ -107,8 +159,11 @@ const AddAddress = () => {
             />
             {errors.name && <small style={errorStyle}>{errors.name}</small>}
           </div>
+
           <div style={colStyle}>
-            <label style={labelStyle}><FaPhone /> Phone:</label>
+            <label style={labelStyle}>
+              <FaPhone /> Phone:
+            </label>
             <input
               type="tel"
               name="phone"
@@ -121,8 +176,11 @@ const AddAddress = () => {
           </div>
         </div>
 
+        {/* Address */}
         <div style={fullRow}>
-          <label style={labelStyle}><FaHome /> Address:</label>
+          <label style={labelStyle}>
+            <FaHome /> Address:
+          </label>
           <textarea
             name="address"
             value={form.address}
@@ -133,9 +191,12 @@ const AddAddress = () => {
           {errors.address && <small style={errorStyle}>{errors.address}</small>}
         </div>
 
+        {/* City & State */}
         <div style={rowStyle}>
           <div style={colStyle}>
-            <label style={labelStyle}><FaCity /> City:</label>
+            <label style={labelStyle}>
+              <FaCity /> City:
+            </label>
             <input
               type="text"
               name="city"
@@ -146,6 +207,7 @@ const AddAddress = () => {
             />
             {errors.city && <small style={errorStyle}>{errors.city}</small>}
           </div>
+
           <div style={colStyle}>
             <label style={labelStyle}>State:</label>
             <input
@@ -160,9 +222,12 @@ const AddAddress = () => {
           </div>
         </div>
 
+        {/* Zip Code */}
         <div style={rowStyle}>
           <div style={colStyle}>
-            <label style={labelStyle}><FaEnvelope /> Zip Code:</label>
+            <label style={labelStyle}>
+              <FaEnvelope /> Zip Code:
+            </label>
             <input
               type="text"
               name="zip"
@@ -176,25 +241,90 @@ const AddAddress = () => {
           <div style={colStyle}></div>
         </div>
 
+        {/* Map */}
         <label style={labelStyle}>Select Location on Map:</label>
-        <div style={{ height: "230px", marginBottom: "20px", borderRadius: "12px", overflow: "hidden" }}>
-          <MapContainer center={[form.lat, form.lng]} zoom={13} style={{ height: "100%", width: "100%" }}>
+        <div
+          style={{
+            height: "230px",
+            marginBottom: "20px",
+            borderRadius: "12px",
+            overflow: "hidden",
+          }}
+        >
+          <MapContainer
+            center={[form.lat, form.lng]}
+            zoom={13}
+            style={{ height: "100%", width: "100%" }}
+          >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; OpenStreetMap contributors'
+              attribution="&copy; OpenStreetMap contributors"
             />
             <MapClickHandler />
             <Marker position={[form.lat, form.lng]} />
           </MapContainer>
         </div>
 
-        <button type="submit" style={buttonStyle}>Save Address</button>
+        <button type="submit" style={buttonStyle}>
+          Save Address
+        </button>
       </form>
+
+      {/* Saved Addresses List */}
+      <div style={{ marginTop: "40px" }}>
+        <h3 style={{ marginBottom: "15px", fontWeight: "700" }}>
+          Saved Addresses
+        </h3>
+        {addresses.length === 0 ? (
+          <p>No addresses saved yet.</p>
+        ) : (
+          addresses.map((addr) => (
+            <div
+              key={addr.id}
+              style={{
+                padding: "15px",
+                marginBottom: "15px",
+                borderRadius: "12px",
+                backgroundColor: addr.isPrimary ? "#d1e7dd" : "#f8f9fa",
+                border: addr.isPrimary
+                  ? "2px solid #0f5132"
+                  : "1px solid #ced4da",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <strong>{addr.name}</strong> — {addr.phone}
+                <br />
+                {addr.address}, {addr.city}, {addr.state} - {addr.zip}
+              </div>
+              <div>
+                <button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: addr.isPrimary ? "#0f5132" : "#6c757d",
+                    fontSize: "20px",
+                    cursor: "pointer",
+                  }}
+                  title={addr.isPrimary ? "Primary Address" : "Set as Primary"}
+                  onClick={() => setPrimaryAddress(addr.id)}
+                >
+                  {addr.isPrimary ? <FaCheckCircle /> : <FaRegCircle />}
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
 
-// Styles
+// Style Objects
 const containerStyle = {
   maxWidth: "800px",
   margin: "30px auto",
