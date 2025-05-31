@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
-import Header from "../extraComponent/Header";
-import Banner from "../extraComponent/Banner";
+import Header from "../components/Header";
+import Banner from "../components/Banner";
 import HomeProducts from "../layouts/Pages/ProductManangement";
 import Products from "../layouts/Products/Products";
 import PaymentHistory from "../layouts/Payment/Payment";
