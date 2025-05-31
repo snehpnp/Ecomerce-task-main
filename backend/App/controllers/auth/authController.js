@@ -101,6 +101,32 @@ class AuthController {
       });
     }
   }
+
+
+  async GetUserProfile(req, res) {
+    try {
+      const {id } = req.params;
+
+      const user = await User.findById(id).select("-password");
+      if (!user) {
+        return res.json({ status: false, message: "User not found" });
+      }
+
+      return res.json({
+        status: true,
+        message: "User profile fetched successfully",
+        user,
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      return res.json({
+        status: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+  
 }
 
 module.exports = new AuthController();

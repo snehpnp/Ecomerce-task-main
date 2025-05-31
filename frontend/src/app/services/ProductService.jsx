@@ -118,3 +118,13 @@ export const GetPaymentByUser = async (data) => {
     throw error;
   }
 };
+
+export const getUserProfile = async (data) => {
+    try {
+        const response = await axios.get(`${base_url}get-user-profile/${data}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        throw error;
+    }
+    }

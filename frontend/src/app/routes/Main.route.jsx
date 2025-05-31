@@ -7,13 +7,16 @@ import HomeProducts from "../layouts/Pages/ProductManangement";
 import Products from "../layouts/Products/Products";
 import PaymentHistory from "../layouts/Payment/Payment";
 import Success from "../layouts/Pages/Success";
-import ProductPage from "../layouts/Pages/ProductPage"
+import ProductPage from "../layouts/Pages/ProductPage";
+import About from "../layouts/Pages/About/About";
+import Contact from "../layouts/Pages/Contact/Contact";
+import Profile from "../layouts/Pages/Profile/Profile";
 
 const Routing = () => {
   const location = useLocation();
 
   // ✅ Paths where Banner should be hidden
-  const MatchData = ["products", "payment","success"];
+  const MatchData = ["products", "payment","success","product","contact","about","profile"];
   const hideBanner = MatchData.some((path) =>
     location.pathname.includes(path)
   );
@@ -34,6 +37,10 @@ const Routing = () => {
               <Route path="/payment" element={<PaymentHistory />} />
                 <Route path="/success" element={<Success />} />
                 <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/profile" element={<Profile />} />
+
 
               {/* Add more routes as needed */}
             </Routes>
