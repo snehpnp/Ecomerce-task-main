@@ -4,7 +4,6 @@ import { MyContext } from "../../../context/MyContext";
 const Cart = () => {
   const { cart, increaseQty, decreaseQty, removeProduct, totalPrice } =
     useContext(MyContext);
-    console.log("Cart items:", cart);
 
   if (!cart || cart.length === 0)
     return (

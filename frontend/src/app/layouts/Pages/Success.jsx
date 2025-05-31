@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CheckCircle } from "react-feather";
 
 const Success = () => {
   const location = useLocation();
@@ -15,25 +16,28 @@ const Success = () => {
       setPaymentId(id);
       setShowPopup(true);
 
-      // Auto-hide after 5 seconds and redirect
+      // Auto-hide after 3 seconds and redirect to homepage
       const timeout = setTimeout(() => {
         setShowPopup(false);
-        navigate("/"); // Redirect to home
+        navigate("/");
       }, 3000);
 
-      return () => clearTimeout(timeout); // Cleanup timeout on unmount
+      return () => clearTimeout(timeout);
     }
   }, [location, navigate]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-green-100 to-white px-4">
       {showPopup && (
-        <div className="bg-green-100 p-6 text-green-800 rounded shadow-md text-center animate-fade-in max-w-md">
-          <h2 className="text-xl font-bold">Payment Successful!</h2>
-          <p className="mt-2">Your payment ID is:</p>
-          <code className="text-sm">{paymentId}</code>
-          <p className="mt-2">Thank you for your purchase!</p>
-          <p className="mt-2">You will be redirected shortly...</p>
+        <div className="bg-white border border-green-200 rounded-2xl shadow-lg p-8 max-w-md w-full text-center animate-fade-in">
+          <div className="flex justify-center mb-4">
+            <CheckCircle size={60} className="text-green-500 animate-bounce" />
+          </div>
+          <h2 className="text-2xl font-semibold text-green-700">Payment Successful!</h2>
+          <p className="mt-2 text-gray-700">Thank you for your purchase.</p>
+          <p className="mt-1 text-sm text-gray-500">Your payment ID:</p>
+          <code className="block mt-1 text-sm font-mono text-gray-800 bg-gray-100 p-1 rounded">{paymentId}</code>
+          <p className="mt-4 text-sm text-gray-400">Redirecting to homepage...</p>
         </div>
       )}
     </div>
