@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { handleCheckout, getProductById } from "../../services/ProductService";
-import { authToken } from "../../utils/Tokenverify";
-import ProductAll from "../Pages/ProductManangement";
+import { handleCheckout, getProductById } from "../../../services/ProductService";
+import { authToken } from "../../../utils/Tokenverify";
+import ProductAll from "../../Pages/Home/ProductManangement";
 
 const ProductCard = () => {
   const navigate = useNavigate();

@@ -34,6 +34,8 @@ const Header = () => {
         <Link to="/" className="hover:text-blue-600 transition">Home</Link>
         <Link to="/about" className="hover:text-blue-600 transition">About Us</Link>
         <Link to="/contact" className="hover:text-blue-600 transition">Contact</Link>
+        <Link to="/cart" className="hover:text-blue-600 transition">cart</Link>
+
         {token?.role === "ADMIN" && (
           <Link to="/products" className="hover:text-blue-600 transition">Products</Link>
         )}
@@ -87,6 +89,13 @@ const Header = () => {
                 onClick={() => setIsDropdownVisible(false)}
               >
                 Payment History
+              </Link>
+              <Link
+                to="/add-address"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setIsDropdownVisible(false)}
+              >
+                Add Address
               </Link>
               <button
                 onClick={handleLogout}

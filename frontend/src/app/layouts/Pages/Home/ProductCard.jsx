@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { handleCheckout } from "../../services/ProductService";
-import { authToken } from "../../utils/Tokenverify";
+import { handleCheckout } from "../../../services/ProductService";
+import { authToken } from "../../../utils/Tokenverify";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();

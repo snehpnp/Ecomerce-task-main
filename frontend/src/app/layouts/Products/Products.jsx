@@ -115,7 +115,6 @@ const ProductTable = () => {
         }
       }
     });
-
   };
 
   const handleSearch = (e) => {
@@ -135,194 +134,245 @@ const ProductTable = () => {
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
 
+  // Styles for background, overlay, and content wrapper
+  const backgroundStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundImage:
+      "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    zIndex: -2,
+    animation: "bgZoom 20s ease-in-out infinite",
+  };
+
+  const overlayStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: -1,
+  };
+
+  const contentWrapperStyle = {
+    position: "relative",
+    zIndex: 1,
+    minHeight: "100vh",
+    padding: "2rem",
+    color: "#fff",
+  };
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Product Management</h2>
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="border px-2 py-1 rounded mr-4"
-        />
-        <button
-          onClick={openAddModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Add Product
-        </button>
-      </div>
+    <>
+      <style>
+        {`
+          @keyframes bgZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+          }
+        `}
+      </style>
 
-      <table className="w-full border text-left">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="p-2 border">#</th>
-            <th className="p-2 border">Name</th>
-            <th className="p-2 border">Price</th>
-            <th className="p-2 border">Stock</th>
-            <th className="p-2 border">Image</th>
-            <th className="p-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedProducts.map((prod, i) => (
-            <tr key={prod._id} className="hover:bg-gray-50">
-              <td className="p-2 border">
-                {(currentPage - 1) * ITEMS_PER_PAGE + i + 1}
-              </td>
-              <td className="p-2 border">{prod.name}</td>
-              <td className="p-2 border">{prod.price}</td>
-              <td className="p-2 border">{prod.stock}</td>
-              <td className="p-2 border">
-                {prod.image_url && (
-                  <img
-                    src={prod.image_url}
-                    alt={prod.name}
-                    className="w-16 h-16 object-cover cursor-pointer"
-                    onClick={() =>
-                      setImageModal({ open: true, src: prod.image_url })
-                    }
-                  />
-                )}
-              </td>
-              <td className="p-2 border">
-                <button
-                  onClick={() => openEditModal(prod)}
-                  className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(prod._id)}
-                  className="bg-red-600 text-white px-2 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div style={backgroundStyle} />
+      <div style={overlayStyle} />
 
-      <div className="flex justify-between items-center mt-4">
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <div className="space-x-2">
-          {[...Array(totalPages)].map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentPage(idx + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === idx + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              {idx + 1}
-            </button>
-          ))}
-        </div>
-      </div>
+      <div style={contentWrapperStyle}>
+       <div className="p-6 bg-white bg-opacity-80 rounded-xl shadow-lg text-black max-w-5xl mx-auto">
 
-      {/* Image Modal */}
-      {imageModal.open && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded relative">
-            <button
-              onClick={() => setImageModal({ open: false, src: "" })}
-              className="absolute top-1 right-2 text-gray-600 hover:text-red-600"
-            >
-              &#10005;
-            </button>
-            <img
-              src={imageModal.src}
-              alt="Preview"
-              className="max-w-full max-h-[80vh]"
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Product Management</h2>
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="border px-2 py-1 rounded mr-4"
             />
+            <button
+              onClick={openAddModal}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Add Product
+            </button>
           </div>
-        </div>
-      )}
 
-      {/* Add/Edit Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">
-              {isEdit ? "Edit Product" : "Add Product"}
-            </h2>
-            <form onSubmit={handleFormSubmit} className="space-y-3">
-              <input
-                type="text"
-                name="name"
-                placeholder="Product Name"
-                value={currentProduct.name}
-                onChange={handleInputChange}
-                className="w-full border p-2"
-                required
-              />
-              <input
-                type="number"
-                name="price"
-                placeholder="Price"
-                value={currentProduct.price}
-                onChange={handleInputChange}
-                className="w-full border p-2"
-                required
-              />
-              <input
-                type="number"
-                name="offer_price"
-                placeholder="Offer Price"
-                value={currentProduct.offer_price}
-                onChange={handleInputChange}
-                className="w-full border p-2"
-              />
-              <select
-                name="stock"
-                value={currentProduct.stock}
-                onChange={handleInputChange}
-                className="w-full border p-2"
-              >
-                <option value="">Select Stock Status</option>
-                <option value="1">In Stock</option>
-                <option value="0">Out of Stock</option>
-              </select>
-              <textarea
-                name="description"
-                placeholder="Short Description"
-                value={currentProduct.description}
-                onChange={handleInputChange}
-                className="w-full border p-2"
-                required
-              ></textarea>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files[0])}
-                className="w-full"
-              />
-              <div className="flex justify-end gap-3">
+          <table className="w-full border text-left">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2 border">#</th>
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">Price</th>
+                <th className="p-2 border">Stock</th>
+                <th className="p-2 border">Image</th>
+                <th className="p-2 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedProducts.map((prod, i) => (
+                <tr key={prod._id} className="hover:bg-gray-50">
+                  <td className="p-2 border">
+                    {(currentPage - 1) * ITEMS_PER_PAGE + i + 1}
+                  </td>
+                  <td className="p-2 border">{prod.name}</td>
+                  <td className="p-2 border">{prod.price}</td>
+                  <td className="p-2 border">{prod.stock}</td>
+                  <td className="p-2 border">
+                    {prod.image_url && (
+                      <img
+                        src={prod.image_url}
+                        alt={prod.name}
+                        className="w-16 h-16 object-cover cursor-pointer"
+                        onClick={() =>
+                          setImageModal({ open: true, src: prod.image_url })
+                        }
+                      />
+                    )}
+                  </td>
+                  <td className="p-2 border">
+                    <button
+                      onClick={() => openEditModal(prod)}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(prod._id)}
+                      className="bg-red-600 text-white px-2 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="flex justify-between items-center mt-4">
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="space-x-2">
+              {[...Array(totalPages)].map((_, idx) => (
                 <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 border rounded"
+                  key={idx}
+                  onClick={() => setCurrentPage(idx + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === idx + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
+                  }`}
                 >
-                  Cancel
+                  {idx + 1}
                 </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                  {isEdit ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
+              ))}
+            </div>
           </div>
+
+          {/* Image Modal */}
+          {imageModal.open && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+              <div className="bg-white p-4 rounded relative">
+                <button
+                  onClick={() => setImageModal({ open: false, src: "" })}
+                  className="absolute top-1 right-2 text-gray-600 hover:text-red-600"
+                >
+                  &#10005;
+                </button>
+                <img
+                  src={imageModal.src}
+                  alt="Preview"
+                  className="max-w-full max-h-[80vh]"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Add/Edit Modal */}
+          {modalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+                <h2 className="text-lg font-semibold mb-4">
+                  {isEdit ? "Edit Product" : "Add Product"}
+                </h2>
+                <form onSubmit={handleFormSubmit} className="space-y-3">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Product Name"
+                    value={currentProduct.name}
+                    onChange={handleInputChange}
+                    className="w-full border p-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="price"
+                    placeholder="Price"
+                    value={currentProduct.price}
+                    onChange={handleInputChange}
+                    className="w-full border p-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="offer_price"
+                    placeholder="Offer Price"
+                    value={currentProduct.offer_price}
+                    onChange={handleInputChange}
+                    className="w-full border p-2"
+                  />
+                  <select
+                    name="stock"
+                    value={currentProduct.stock}
+                    onChange={handleInputChange}
+                    className="w-full border p-2"
+                  >
+                    <option value="">Select Stock Status</option>
+                    <option value="1">In Stock</option>
+                    <option value="0">Out of Stock</option>
+                  </select>
+                  <textarea
+                    name="description"
+                    placeholder="Short Description"
+                    value={currentProduct.description}
+                    onChange={handleInputChange}
+                    className="w-full border p-2"
+                    required
+                  ></textarea>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImageFile(e.target.files[0])}
+                    className="w-full"
+                  />
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setModalOpen(false)}
+                      className="px-4 py-2 border rounded"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                      {isEdit ? "Update" : "Add"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -1,49 +1,42 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/Auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+const MySwal = withReactContent(Swal);
 
 export default function Login() {
   const [userData, setUserData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false); // 👁️ Eye toggle
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
-      navigate("/");
-    }
+    if (user) navigate("/");
   }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData({
-      ...userData,
-      [name]: value,
-    });
+    setUserData((prev) => ({ ...prev, [name]: value }));
     validate(name, value);
   };
 
   const validate = (name, value) => {
     const newErrors = { ...errors };
-    if (!value) {
-      newErrors[name] = `${name} is required`;
-    } else {
-      delete newErrors[name];
-    }
-
+    if (!value.trim()) newErrors[name] = `${name} is required`;
+    else delete newErrors[name];
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateAllFields = () => {
     let isValid = true;
-    for (const key in userData) {
-      if (!validate(key, userData[key])) {
-        isValid = false;
-      }
-    }
+    Object.entries(userData).forEach(([key, val]) => {
+      if (!validate(key, val)) isValid = false;
+    });
     return isValid;
   };
 
@@ -54,57 +47,77 @@ export default function Login() {
     try {
       const res = await login(userData);
       if (res?.status) {
-        Swal.fire({
+        MySwal.fire({
+          toast: true,
+          position: "top-end",
           icon: "success",
-          title: "Login Successful",
-          text: res.message,
+          title: res.message || "Login Successful",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
         });
         navigate("/");
       } else {
-        Swal.fire({
+        MySwal.fire({
+          toast: true,
+          position: "top-end",
           icon: "error",
-          title: "Login Failed",
-          text: res.message,
+          title: res.message || "Login Failed",
+          showConfirmButton: false,
+          timer: 2000,
         });
       }
-    } catch (error) {
-      console.log("error in login user", error);
+    } catch (err) {
+      console.error("Login Error", err);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center relative"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        padding: "20px",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      }}
+    >
+      <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+      <div className="relative z-10 bg-white bg-opacity-90 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
+          Welcome Back 👋
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email Address
+            <label htmlFor="email" className="block text-gray-700 font-medium">
+              Email
             </label>
             <input
               type="email"
               name="email"
               value={userData.email}
               onChange={handleChange}
-              className="mt-1 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="Enter your email"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+              <p className="text-sm text-red-500 mt-1">{errors.email}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-gray-700 font-medium"
             >
               Password
             </label>
@@ -114,38 +127,41 @@ export default function Login() {
                 name="password"
                 value={userData.password}
                 onChange={handleChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                className={`w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Enter your password"
               />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-2 top-2 text-gray-600"
+              <span
+                className="absolute top-3 right-3 text-gray-500 cursor-pointer"
+                onClick={() => setShowPassword((prev) => !prev)}
               >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
+              <p className="text-sm text-red-500 mt-1">{errors.password}</p>
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <a href="#" className="text-sm text-blue-500 hover:underline">
+          <div className="flex justify-between text-sm">
+            <span
+              className="text-blue-500 hover:underline cursor-pointer"
+              onClick={() => Swal.fire("Feature not available yet")}
+            >
               Forgot password?
-            </a>
-            <button
-              type="button"
-              className="text-sm text-green-600 hover:underline"
+            </span>
+            <span
+              className="text-green-600 hover:underline cursor-pointer"
               onClick={() => navigate("/register")}
             >
-              Register
-            </button>
+              Create account
+            </span>
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
           >
             Login
           </button>
