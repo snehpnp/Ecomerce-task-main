@@ -81,10 +81,7 @@ class ProductController {
     const { id } = req.body;
 
     try {
-      const product = await Product.findById(id).populate(
-        "category_id",
-        "name"
-      );
+      const product = await Product.findById(id)
       if (!product) {
         return res.send({
           status: false,

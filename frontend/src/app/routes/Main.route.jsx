@@ -7,6 +7,7 @@ import HomeProducts from "../layouts/Pages/ProductManangement";
 import Products from "../layouts/Products/Products";
 import PaymentHistory from "../layouts/Payment/Payment";
 import Success from "../layouts/Pages/Success";
+import ProductPage from "../layouts/Pages/ProductPage"
 
 const Routing = () => {
   const location = useLocation();
@@ -32,6 +33,8 @@ const Routing = () => {
               <Route path="/products" element={<Products />} />
               <Route path="/payment" element={<PaymentHistory />} />
                 <Route path="/success" element={<Success />} />
+                <Route path="/product/:id" element={<ProductPage />} />
+
               {/* Add more routes as needed */}
             </Routes>
           </div>

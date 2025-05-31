@@ -16,8 +16,16 @@ const ProductCard = ({ product }) => {
     handleCheckout(data, Token);
   };
 
+  const RedirectToProductPage = () => {
+    if (!Token) {
+      navigate("/login");
+      return;
+    }
+    navigate(`/product/${product._id}`);
+  }
+
   return (
-    <div className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer">
+    <div className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer" onClick={RedirectToProductPage}>
       <div className="cursor-pointer group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
         {product?.image_url?.[0] && (
           <img
